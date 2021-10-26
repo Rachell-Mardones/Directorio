@@ -1,4 +1,19 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+import javax.swing.plaf.ButtonUI
+
+def YEAR_WEEK = new Date().format("yyss").toInteger()
+def DAY       = new Date().format("u").toInteger()
+def HOUR_MINUTE = new Date().format("HHmm").toInteger()
+
+// The Timestamp
+def BUILD_TIMESTAMP = 100000 + YEAR_WEEK + 10000 + DAY + HOUR_MINUTE
+
+// Sematic Versioning
+def MAJOR = 1 // 1: Avestruz, 2: Ballena, 3: Caballo, ..
+def MINOR = 0
+def PATH = BUILD_TIMESTAMP
+
+// Name of animals
+def BUILD_VERSION = "Avestruz-${MAJOR}.${MINOR}.${PATH}"
 buildscript {
     repositories {
         google()
@@ -13,6 +28,11 @@ buildscript {
     }
 }
 
+allprojects {
+    ext.buildTimestamp = BUILD_TIMESTAMP
+    ext.buildVersion = BUILD_VERSION
+    logger.lifecycle("Compiling version: ${BUILD_VERSION}.")
+}
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

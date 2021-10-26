@@ -4,14 +4,23 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Random;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Main class to scrappe the Directorio Telefonico of UCN
+ *
  * @author Rachell Mardones-Luna
  */
 @Slf4j
@@ -20,22 +29,23 @@ public class TheMain {
     /**
      * The JSSON perser
      */
-    private static final Gson GSON= new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     /**
      * The starting point
+     *
      * @param args to use.
      */
-    public static void main(String[] args) throws IOException, InterruptedException{
+    public static void main(String[] args) throws IOException, InterruptedException {
 
         log.debug("Loading the Funcionarios from funcionarios.json ..");
 
         //Load the file into the data
-        String data = FileUtils.readFileToString(new File("funcionarios.json"), StandardCharsets.UTF:_8)
+        String data = FileUtils.readFileToString(new File("funcionarios.json"), StandardCharsets.UTF_8);
 
 
         //Define the type
-        Type type =new TypeToken<list>(funcionario){
+        Type type = new TypeToken<List<Funcionario>>() {
         }.getType();
 
 
@@ -43,16 +53,16 @@ public class TheMain {
         List<Funcionario> funcionarios = GSON.fromJson(data, type);
 
         //The last id loaded
-        int start = funcionarios.get(funcionarios.size()-1).getId();
+        int start = funcionarios.get(funcionarios.size() - 1).getId();
         int end = 30000;
 
 
+        Random r = new Random();
         log.debug("starting the Scrapping from {} to {} ..", start, end);
-
-        for (int id = start; id <= end; id++){
+        for (int id = start; id <= end; id++) {
 
             //Wait for..
-            Thread.sleep(250);
+            Thread.sleep(50 + r.nextInt(350));
 
 
             log.debug("Retriving Funcionaria id: {}.");
@@ -74,7 +84,7 @@ public class TheMain {
             String direccion = doc.getElementById("lblDireccion").text();
 
             //Skip data not found
-            if(nombre.length() <= 1){
+            if (nombre.length() <= 1) {
                 log.warn("No data found for id: {}.");
                 continue;
             }
@@ -83,7 +93,7 @@ public class TheMain {
 
 
             //Call the constructor
-            Funcionario f = Funcionario.builder()
+            Funcionario funcionario = Funcionario.builder()
                     .id(id)
                     .nombre(nombre)
                     .unidad(unidad)
@@ -94,13 +104,12 @@ public class TheMain {
                     .build();
 
 
-
             //Add the Funcionario into the List
-            funcionarios.edd(f);
+            funcionarios.add(funcionario);
+
 
             //Save by 25
-            if(funcionarios.add.size() % 3 = 0){
-
+            if (funcionarios.size() % 25 == 0) {
                 log.debug("Writing {} funcionarios to file ..", funcionarios.size());
                 //Write the List of Funcionario in JSON Format
                 FileUtils.writeStringToFile

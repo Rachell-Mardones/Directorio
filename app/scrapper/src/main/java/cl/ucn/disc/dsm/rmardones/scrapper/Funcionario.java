@@ -5,7 +5,8 @@ import lombok.Getter;
 
 /**
  * The Funcionario
- *@author Rachell Mardones-Luna.
+ *
+ * @author Rachell Mardones-Luna.
  */
 @Builder
 public final class Funcionario {
